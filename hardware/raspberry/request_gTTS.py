@@ -7,6 +7,7 @@ from pygame import mixer        # 음성출력 모듈
 
 # 초기 세팅
 PORT = '/dev/ttyACM0'
+USER_ID = 'rltn123'
 SERIAL_NUMBER = '20200814042555141'
 
 # 데이터 요청 Domain 선언
@@ -228,18 +229,21 @@ def request_drinks_update() :
 
     # 서버에게 요청할 데이터 생성
     drink = {
+        'user_id' : USER_ID,
         'serial_number' : SERIAL_NUMBER,  
-        'sold_position' : sensings["sold_position"] 
+        'drink' :{
+            'sold_position' : sensings["sold_position"],
+            'name' : drinks["name"][sensings["sold_position"]-1],
+            'price' : drinks["price"][sensings["sold_position"]-1],
         }
+        
+    }
                             
-    print('sensings : ', sensings)
+    print('요청 데이터 : ', drink)
 
     # 서버 요청
     response = requests.post(URL + '/rasp/drink/update', data = drink)
-    # 응답 JSON 데이터 변환
-    print("response")
-    print(requests.post(URL + '/rasp/drink/update', data = drink))
-    
+    # 응답 JSON 데이터 변환    
     response = json.loads(response.text)
 
     # 서버에서 정상 처리 됐는지 확인
