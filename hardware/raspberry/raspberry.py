@@ -10,7 +10,7 @@ import serial                   # 직렬 통신 모듈
 # 내장모듈
 from module.Env import *
 from module.Http import Http
-from module.Speak import Speak
+from module.Speak import Espeak, Gspeak
 from module.Serial import Serial
     
 # 메인 함수
@@ -25,6 +25,17 @@ def main():
 
     # 음료수 정보 요청
     Http.request_drinks()
+
+    # 초기 사운드 메세지 설정
+    Gspeak.set_message()
+
+    # 음료수 이름을 파일명으로하는 사운드 만들고 저장
+    for key, value in sound_msgs.items() :
+        if key == 'basic' :
+            Gspeak.save_sound(key, value)
+        else :
+            for file_name, message in sound_msgs['key'].items() :
+                Gspeak.save_sound(file_name, message)
 
     # 무한 반복
     while True:
@@ -55,7 +66,7 @@ def main():
                             sensing_data = sensings["sold_position"]
 
                             # 실행중인 espeak 프로세스 종료
-                            Speak.exit()
+                            Espeak.exit()
 
                             # 판매된 음료수 정보 차감 요청
                             print("판매된 음료 차감 데이터를 요청하고 스피커 출력을 실행합니다.")
@@ -63,7 +74,8 @@ def main():
 
                             # 스피커 출력
                             print("스피커 출력을 실행합니다.")
-                            Speak.say(SPEAK_OPTION, "sold", sensings["sold_position"]-1)
+                            # Espeak.say(SPEAK_OPTION, "sold", sensings["sold_position"]-1)
+                            Gspeak.say(SPEAK_OPTION, "sold", drinks["name"][sensings["sold_position"]-1])
                             
                     # 손이 음료 버튼에 위치했을 경우에 실행
                     elif sensings["sensed_position"] != -1 :
@@ -73,17 +85,19 @@ def main():
                             sensing_data = sensings["sensed_position"]
 
                             # 실행중인 espeak 프로세스 종료
-                            Speak.exit()
+                            Espeak.exit()
 
                             print("물체가 감지되어 스피커 출력을 실행합니다.")
 
                             # 해당 음료가 품절일 경우 실행
                             if drinks["count"][sensings["sensed_position"]-1] <= 0 :
                                 # 스피커 출력
-                                Speak.say(SPEAK_OPTION, "sold_out", sensings["sensed_position"]-1)
+                                # Espeak.say(SPEAK_OPTION, "sold_out", sensings["sensed_position"]-1)
+                                Gspeak.say(SPEAK_OPTION, "sold_out", drinks["name"][sensings["sold_position"]-1])
                             else :
                                 # 스피커 출력
-                                Speak.say(SPEAK_OPTION, "position", sensings["sensed_position"]-1)
+                                # Espeak.say(SPEAK_OPTION, "position", sensings["sensed_position"]-1)
+                                Gspeak.say(SPEAK_OPTION, "position", drinks["name"][sensings["sold_position"]-1])
                             
                     # 수신한 변수명 집합 비우기 => 다음 센싱 때에도 정상 수신하는지 검사하기 위함 
                     received_keys.clear()
@@ -96,7 +110,7 @@ def main():
                     sensing_data = sensings["success"]
 
                     # 실행중인 espeak 프로세스 종료
-                    Speak.exit()
+                    Espeak.exit()
 
                     # 음료수 정보 요청
                     print("센싱 데이터가 없습니다.\n서버로부터 음료 정보를 불러옵니다...")
@@ -104,7 +118,8 @@ def main():
 
                     # 스피커 출력
                     print("스피커 출력을 실행합니다.\n:인사말 ")
-                    Speak.say(SPEAK_OPTION, "basic")
+                    # Espeak.say(SPEAK_OPTION, "basic")
+                    Gspeak.say(SPEAK_OPTION, "basic")
         else :
             print("수신 가능한 센싱 데이터가 아닙니다.")
                 
