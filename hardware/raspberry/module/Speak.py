@@ -15,7 +15,7 @@ class Gspeak:
     def save_sound(file_name, message):
         # mp3 변환 및 출력, 한국어
         tts = gTTS(text=message, lang='ko')
-        tts.save(f'sounds/{file_name}')
+        tts.save(f'sounds/{file_name}.mp3')
 
     @staticmethod
     # 사운드 메세지 제작 함수
@@ -45,7 +45,7 @@ class Gspeak:
             ''' 센싱되고 있지 않은 기본 상태 '''
 
             mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'sounds/basic')
+            mixer.music.load(f'sounds/basic.mp3')
             mixer.music.play()
         else:
             '''
@@ -57,7 +57,7 @@ class Gspeak:
             '''
 
             mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'sounds/{sound_msgs[status][drink_name]}')
+            mixer.music.load(f'sounds/{sound_msgs[status][drink_name]}.mp3')
             mixer.music.play()
 
 
