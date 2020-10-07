@@ -49,11 +49,12 @@ def main():
     while True:
         # 센싱 데이터 한 줄 단위로 수신
         receive = port.readline()
-        # 이용 가능한 데이터인지 검사
-        receive = is_available(receive)
 
-        # 이용 가능한 데이터라면 실행 
-        if receive :
+        # 바이트형을 기본 문자열형으로 디코딩
+        receive = list(map(lambda rcv : rcv.decode(), receive.split()))
+
+        # 이용 가능한 데이터인지 검사
+        if is_available(receive) :
             # 수신한 변수명 저장 
             received_keys.add(receive[0])
 
@@ -150,14 +151,11 @@ def is_available(receive) :
 
         @ receive : 아두이노와 시리얼 통신을 통해 받은 수신 데이터
     '''
-
-    # 바이트형을 기본 문자열형으로 디코딩
-    receive = list(map(lambda rcv : rcv.decode(), receive.split()))
     
     # 수신한 변수명이 라즈베리파이에서 가공하고자하는 변수명들 중에 존재하는지 검사
     if receive != [] and receive[0] in basic_keys :
         # 존재한다면 수신 데이터 반환 
-        return receive
+        return True
     
     # 존재하지 않는다면 False 반환
     return False
