@@ -8,6 +8,7 @@ from pygame import mixer        # 음성출력 모듈
 from Http import Http
 from Env import *
 
+
 class Gspeak:
 
     @staticmethod
@@ -36,6 +37,28 @@ class Gspeak:
             sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오. "
             # 음료수 품절 상태
             sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
+
+    @staticmethod
+    # 자판기 음료수 중 수정된 것이 있는지, 없는지 반환하는 함수
+    def update_message():
+        
+        # 서버로부터 전달된 음료수 이름들 순회
+        for idx, drink_name in enumerate(drinks["name"]):
+            # 사운드로 만들어지지 않은 음료수가 있다면 실행
+            if drink_name not in sound_msgs["position"]:
+                # 자판기의 모든 음료 정보를 하나의 문자열로 병합
+                names = ""
+                for i, name in enumerate(drinks["name"]):
+                    names += f"{str(i+1)}번 {name} "
+
+                # 센싱되고 있지 않은 기본 상태 메세지
+                sound_msgs["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names}"
+                # 손이 음료를 향해 위치한 상태 메세지
+                sound_msgs["position"][drinks["name"][idx]] = f"{drinks['name'][idx]} {str(drinks['price'][idx])}원. "
+                # 음료수가 팔린 상태
+                sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오. "
+                # 음료수 품절 상태
+                sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
 
     @staticmethod
     # 구글 TTS로 말하는 함수
