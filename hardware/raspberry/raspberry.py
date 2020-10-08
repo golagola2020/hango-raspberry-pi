@@ -112,9 +112,10 @@ def main():
                     # 실행중인 espeak 프로세스 종료
                     Espeak.exit()
 
-                    # 음료수 정보 요청
+                    # 음료수 정보 요청 후 수정된 음료수가 있다면 사운드 파일 업데이트
                     print("센싱 데이터가 없습니다.\n서버로부터 음료 정보를 불러옵니다...")
                     Http.request_drinks()
+                    Gspeak.update_message()
 
                     # 스피커 출력
                     print("스피커 출력을 실행합니다.\n:인사말 ")
