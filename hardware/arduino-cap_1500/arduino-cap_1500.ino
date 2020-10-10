@@ -34,14 +34,23 @@ void loop()
     // If the capacitance reading is greater than the threshold, play a note:
     //Serial.print(keys[i].capacitiveSensor(NUM_OF_SAMPLES));
     if (keys[i].capacitiveSensor(NUM_OF_SAMPLES) > 1500 ){
-      Serial.print("success ");
-      Serial.println(true);
-      Serial.print("sensed_position ");
-      Serial.println(i+1);
-      break;
+      if(Serial.available()){
+        Serial.print("success ");
+        Serial.println(true);
+        data = Serial.read();
+        data = int(data);
+        Serial.print("solded_drink ");
+        Serial.println(data);
+        Serial.print("sensed_position ");
+        Serial.println(i+1);
+        break;
+        }
+       else {
+        Serial.print("success ");
+        Serial.println(false);
+        break;
+       }
     }
   }
-  
-
-  delay(500);                             // arbitrary delay to limit data to serial port
+  delay(1000);                             // arbitrary delay to limit data to serial port
 }
