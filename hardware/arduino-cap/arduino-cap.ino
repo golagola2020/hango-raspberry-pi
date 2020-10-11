@@ -14,7 +14,8 @@
    Receive pin is the sensor pin - try different amounts of foil/metal on this pin
 */
 CapacitiveSensor keys[] = {CS(3), CS(4), CS(5), CS(6), CS(7), CS(8), CS(9), CS(10)};
-char data;
+char hand;
+bool hand_exist = false;
  
 void setup()
 {
@@ -33,15 +34,29 @@ void loop()
   for (int i = 0; i < 8; ++i) {
     // If the capacitance reading is greater than the threshold, play a note:
     //Serial.print(keys[i].capacitiveSensor(NUM_OF_SAMPLES));
-    if (keys[i].capacitiveSensor(NUM_OF_SAMPLES) > 1500 ){
-      Serial.print("success ");
-      Serial.println(true);
-      Serial.print("sensed_position ");
-      Serial.println(i+1);
-      break;
+    /*
+    Serial.print(keys[i].capacitiveSensor(NUM_OF_SAMPLES));
+    if (i != 7) {
+      Serial.print(",");
+    } else {
+      Serial.println();
     }
+    */
+    if (keys[i].capacitiveSensor(NUM_OF_SAMPLES) > 1000 ){
+        hand = i+49;
+        hand = char(hand); //Uart only recognize ascii values.
+        hand_exist = true;
+      
+        Serial.println(hand);
+        break;
+       }
   }
-  
+  /*
+  if (hand_exist == false){
+    Serial.println("0");
+  }*/
 
+  hand_exist = false;
+  
   delay(500);                             // arbitrary delay to limit data to serial port
 }
