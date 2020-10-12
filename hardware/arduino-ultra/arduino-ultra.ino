@@ -1,4 +1,6 @@
+#include <solded.h>
 #include <math.h>
+
 
 #define MAX_LINE 2          // 자판기 전체 라인 수
 #define MAX_POSITION 4      // 자판기 한 라인의 칸 수
@@ -48,12 +50,9 @@ void loop() {
   }
 
  
-
-
-
-
   for (int i = 0; i < MAX_LINE; i++) {
-    sold_position = solded(distance[i],i);
+    solded solded(distance[i],i,BOTH_SIDE_SPACE,MAX_POSITION,BUTTON_RANGE);
+    sold_position = solded.calculate_sold();
     if (sold_position != 0) break;
   }
 
@@ -89,14 +88,4 @@ void loop() {
 
   sold_position = 0; //초기화
 
-}
-
-
-
-int solded(int distance, int line_num) {
-  int sold_position = 0;
-  if (BOTH_SIDE_SPACE <= distance && distance < (MAX_POSITION * BUTTON_RANGE) + BOTH_SIDE_SPACE)
-    sold_position = ceil((distance - BOTH_SIDE_SPACE) / BUTTON_RANGE + (line_num * MAX_POSITION)) + 1;
-
-  return sold_position;
 }
