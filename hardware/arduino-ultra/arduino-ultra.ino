@@ -5,7 +5,7 @@
 #define PIN_COUNT 2         // 핀 개수
 #define BOTH_SIDE_SPACE 10  // 자판기에서 버튼이 존재하지 않는 양옆 구간의 공간(cm)
 #define BUTTON_RANGE 10     // 버튼과 버튼 사이의 공간(cm)
-#define LOOP 3 
+
 
 // 입출력 핀 정의
 const int trigPin[PIN_COUNT] = {4, 6};
@@ -15,10 +15,10 @@ const int echoPin[PIN_COUNT] = {5, 7};
 long duration[PIN_COUNT], distance[PIN_COUNT];
 
 int drinks_numbers[MAX_LINE][(MAX_POSITION / MAX_LINE) + 1]; //음료 번호 지정 ex.1,2,3,4 ...
-int solded_drink = 0;                                      //선택되어 판매되는 음료수, -1은 음료가 판매되지 않았음을 의미
+int sold_position = 0;                                      //선택되어 판매되는 음료수, -1은 음료가 판매되지 않았음을 의미
 
 int sensed_position;
-int loop_num = 0;
+
 
 void setup() {
   //시리얼 통신을 설정(전송속도 9600bps)
@@ -29,11 +29,11 @@ void setup() {
     pinMode(trigPin[i], OUTPUT);
     pinMode(echoPin[i], INPUT);
   }
-  
+
 }
 
 void loop() {
-  
+
   for (int i = 0; i < PIN_COUNT; i++) {
     digitalWrite(trigPin[i], LOW);
     delayMicroseconds(2);
@@ -47,54 +47,56 @@ void loop() {
     distance[i] = (duration[i] / 2) / 29.1;
   }
 
-  
-  
+ 
 
-  for (int i = 0; i < MAX_LINE; i++){
-    solded_drink = solded(distance[i],i);
-    if (solded_drink != 0) break;
+
+
+
+  for (int i = 0; i < MAX_LINE; i++) {
+    sold_position = solded(distance[i],i);
+    if (sold_position != 0) break;
   }
 
 
-  if (Serial.available()){
+  if (Serial.available()) {
     char data = Serial.read();
-    if (data >= 49 && data <= 56 ){
-      sensed_position = int(data-48);
+    if (data >= 49 && data <= 56 ) {
+      sensed_position = int(data - 48);
     }
   }
   else {
     sensed_position = 0;
   }
 
-  if(loop_num == LOOP){
-    if (sensed_position == 0 && solded_drink == 0){
-      Serial.print("success ");
-      Serial.println(false);
-    }
-    else {
-      Serial.print("success ");
-      Serial.println(true);
-      Serial.print("sensed_position ");
-      Serial.println(sensed_position);
-      Serial.print("solded_drink ");
-      Serial.println(solded_drink);     
-    }
-    loop_num = 0;
-  }
-  else loop_num++;
-  
-  
-  
-  delay(100); //음료수 떨어지는 속도에 따라 알아서 조절할것
 
-  solded_drink = 0; //초기화
+  if (sensed_position == 0 && sold_position == 0) {
+    Serial.print("success ");
+    Serial.println(false);
+  }
+  else {
+    Serial.print("success ");
+    Serial.println(true);
+    Serial.print("sensed_position ");
+    Serial.println(sensed_position);
+    Serial.print("sold_position ");
+    Serial.println(sold_position);
+  }
+
+
+
+
+  delay(500); //음료수 떨어지는 속도에 따라 알아서 조절할것
+
+  sold_position = 0; //초기화
 
 }
 
-int solded(int distance, int line_num) {
-  int solded_drink = 0;
-  if (BOTH_SIDE_SPACE <= distance && distance < (MAX_POSITION * BUTTON_RANGE) + BOTH_SIDE_SPACE)
-    solded_drink = ceil((distance - BOTH_SIDE_SPACE)/BUTTON_RANGE+(line_num*MAX_POSITION))+1;
 
-  return solded_drink;
+
+int solded(int distance, int line_num) {
+  int sold_position = 0;
+  if (BOTH_SIDE_SPACE <= distance && distance < (MAX_POSITION * BUTTON_RANGE) + BOTH_SIDE_SPACE)
+    sold_position = ceil((distance - BOTH_SIDE_SPACE) / BUTTON_RANGE + (line_num * MAX_POSITION)) + 1;
+
+  return sold_position;
 }

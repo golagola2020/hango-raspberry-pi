@@ -1,7 +1,7 @@
 # 외장모듈
 import os
 import sys                  # 시스템 모듈
-from gtts import gTTS           # TTS 모듈
+import gtts           # TTS 모듈
 from pygame import mixer        # 음성출력 모듈
 
 # 내장모듈

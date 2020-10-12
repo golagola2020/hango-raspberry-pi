@@ -2,16 +2,16 @@
 import os, sys, time            # 시스템 모듈
 import serial                   # 직렬 통신 모듈
 import requests, json           # HTTP 통신 및 JSON 모듈
-from gtts import gTTS           # TTS 모듈    
+import gtts          # TTS 모듈    
 from pygame import mixer        # 음성출력 모듈
 
 # 초기 세팅
-PORT = '/dev/ttyACM0'
+PORT = '/dev/ttyACM1'
 USER_ID = 'rltn123'
 SERIAL_NUMBER = '20200814042555141'
 
 # 데이터 요청 Domain 선언
-URL = str(os.environ['hangoURL'])
+URL = "http://3.35.86.105:9700/"#str(os.environ['hangoURL'])
 
 # 전역 변수 선언
 sensings = {}                                                           # 센싱된 데이터가 키와 값으로 저장될 딕셔너리 

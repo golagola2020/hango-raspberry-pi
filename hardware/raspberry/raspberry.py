@@ -7,6 +7,9 @@
 import os, sys                  # 시스템 모듈
 import serial                   # 직렬 통신 모듈
 
+# 경로설정
+sys.path.append('/home/pi/hango-hardware/hardware/raspberry/module')
+
 # 내장모듈
 from module.Env import *
 from module.Http import Http
