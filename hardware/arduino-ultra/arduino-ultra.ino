@@ -67,19 +67,19 @@ void loop() {
     sensed_position = 0;
   }
 
-
-  if (sensed_position == 0 && sold_position == 0) {
-    Serial.print("success ");
-    Serial.println(false);
-  }
-  else {
+//
+//  if (sensed_position == 0 && sold_position == 0) {
+//    Serial.print("success ");
+//    Serial.println(false);
+//  }
+//  else {
     Serial.print("success ");
     Serial.println(true);
     Serial.print("sensed_position ");
     Serial.println(sensed_position);
     Serial.print("sold_position ");
     Serial.println(sold_position);
-  }
+ // }
 
 
 
