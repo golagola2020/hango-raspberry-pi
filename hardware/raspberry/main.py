@@ -78,6 +78,7 @@ def main():
 
                             # 스피커 출력
                             print("스피커 출력을 실행합니다.")
+                            Gspeak.exit()
                             Gspeak.say("sold", drinks["name"][sensings["sold_position"]-1])
                             
                     # 손이 음료 버튼에 위치했을 경우에 실행
@@ -87,6 +88,7 @@ def main():
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
                             Serial.current_sensing_data = sensings["sensed_position"]
 
+                            Gspeak.exit()
                             print("물체가 감지되어 스피커 출력을 실행합니다.")
 
                             # 해당 음료가 품절일 경우 실행
@@ -116,6 +118,7 @@ def main():
 
                     # 스피커 출력
                     print("스피커 출력을 실행합니다.\n:인사말 ")
+                    Gspeak.exit()
                     Gspeak.say("basic")
         else :
             print("수신 가능한 센싱 데이터가 아닙니다.")

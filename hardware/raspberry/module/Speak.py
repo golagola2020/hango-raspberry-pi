@@ -16,6 +16,9 @@ sound_msgs = {
     'sold_out': {}
 }
 
+# 멀티프로세싱에 사용될 변수
+pid = 0                 # 프로세스 아이디
+
 class Gspeak:
 
     @staticmethod
@@ -84,31 +87,66 @@ class Gspeak:
                 sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
 
     @staticmethod
-    def say(status, drink_name=None):
+    def say(status, drink_name='basic'):
+        
         print(status, drink_name)
         '''
-            구글 TTS로 말하는 함수
+            말하는 함수
+
+            각 상태에 따라 출력 메세지가 달라진다.
+                
+                1. basic : 센싱되고 있지 않은 기본 상태
+                2. position : 손이 음료를 향해 위치한 상태
+                3. sold : 음료수가 팔린 상태
+                4. sold_out : 음료수 품절 상태
+        '''
+        global pid
+
+        # 자식 프로세스 생성
+        pid = os.fork()
+
+        if pid == 0:
+            # Start Sound File.
+            os.system(f"omxplayer -o local {RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3")
+
+        # 부모 프로세스가 실행하는 구문
+        # 센싱이 기본 상태가 아니면 실행
+        if status != "basic":
+            # 자식 프로세스가 종료될 때까지 대기
+            os.waitpid(pid, 0)
+
+    
+
+    @staticmethod
+    # omxplayer 프로세스 종료 함수
+    def exit():
+        '''
+            실행중인 'omxplayer' 프로세스 종료
         '''
 
-        # 자판기 상태 검사
-        if status == "basic":
-            ''' 센싱되고 있지 않은 기본 상태 '''
+        # 할당된 프로세스가 있다면 실행
+        if pid:
+            # 자식프로세스 아이디 출력 후 종료
+            print(pid, "omxplayer 프로세스를 종료합니다.")
+            os.system("killall -9 omxplayer.bin")
 
-            mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
-            mixer.music.play()
-        else:
-            '''
-                각 상태에 따라 출력 메세지가 달라진다.
+    @staticmethod
+    def say_who_pygame(status, drink_name='basic'):
+        print(status, drink_name)
+        '''
+            pygame 로 말하는 함수
 
-                1. position : 손이 음료를 향해 위치한 상태
-                2. sold : 음료수가 팔린 상태
-                3. sold_out : 음료수 품절 상태
-            '''
+            각 상태에 따라 출력 메세지가 달라진다.
+                
+                1. basic : 센싱되고 있지 않은 기본 상태
+                2. position : 손이 음료를 향해 위치한 상태
+                3. sold : 음료수가 팔린 상태
+                4. sold_out : 음료수 품절 상태
+        '''
 
-            mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3')
-            mixer.music.play()
+        mixer.init(25100)  # 음성출력 속도 조절
+        mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3')
+        mixer.music.play()
 
 
 class Espeak:

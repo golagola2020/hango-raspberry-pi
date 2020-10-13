@@ -18,9 +18,6 @@ BASIC_KEYS = {'success', 'sensed_position', 'sold_position'}
 # RPi File Path
 RPI_FILE_PATH = f'{os.getcwd()}/hardware/raspberry'
 
-# 멀티프로세싱에 사용될 변수
-pid = 0                 # 프로세스 아이디
-
 
 
 
