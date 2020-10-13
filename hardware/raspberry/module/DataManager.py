@@ -49,7 +49,7 @@ class DataManager:
     '''
         판매된 음료가 정상 차감됐는지 확인하는 함수
     '''
-    
+
      # 서버에서 정상 처리 됐는지 확인
     if response["success"] :
         print("판매된 음료수 정보가 정상 차감되었습니다.")
