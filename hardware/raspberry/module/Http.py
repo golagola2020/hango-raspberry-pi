@@ -38,7 +38,7 @@ class Http:
   
   @staticmethod
   # 판매된 음료수 정보 차감 요청 함수
-  def update_sold_drink(sold_position) :
+  def update_sold_drink(drinks, sold_position) :
     '''
         서버에게 판매된 음료수 정보를 전달하는 함수
 
@@ -47,17 +47,13 @@ class Http:
         CONTENT-TYPE : application/json
     '''
 
-    drinks = DataManager.get_drinks()
-    print(drinks)
     # 서버에게 요청할 데이터 생성
     drink = {
         'user_id' : USER_ID,
-        'serial_number' : SERIAL_NUMBER,  
-        'drink' : {
-            'name' : drinks["name"][sold_position],
-            'price' : drinks["price"][sold_position],
-            'soldPosition' : sold_position
-        }
+        'serial_number' : SERIAL_NUMBER,
+        'drink_name' : drinks["name"][sold_position],
+        'drink_price' : drinks["price"][sold_position],
+        'drink_sold_position' : sold_position
     }
 
     # 서버 요청

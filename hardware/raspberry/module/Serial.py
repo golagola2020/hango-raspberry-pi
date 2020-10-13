@@ -51,9 +51,9 @@ class Serial:
     # 수신한 변수명 저장 
     received_keys.add(receive[0])
 
-    # 아두이노에서 받은 데이터를 변수명과 값의 형태로 저장, 딕셔너리 형태
+    # 아두이노에서 받은 데이터를 변수명과 값의 형태로 저장, 딕셔너리 형태)
     sensings[ receive[0] ] = int(receive[1])
-    
+
   @staticmethod
   def is_available(receive):
     '''

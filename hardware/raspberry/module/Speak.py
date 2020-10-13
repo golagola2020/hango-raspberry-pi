@@ -61,7 +61,7 @@ class Gspeak:
             sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
 
     @staticmethod
-    def update_message():
+    def update_message(drinks):
         '''
             자판기 음료수 중 수정된 것이 있는지, 없는지 반환하는 함수
         '''
@@ -85,6 +85,7 @@ class Gspeak:
 
     @staticmethod
     def say(status, drink_name=None):
+        print(status, drink_name)
         '''
             구글 TTS로 말하는 함수
         '''
@@ -106,7 +107,7 @@ class Gspeak:
             '''
 
             mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{sound_msgs[status][drink_name]}.mp3')
+            mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3')
             mixer.music.play()
 
 
