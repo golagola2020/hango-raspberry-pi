@@ -11,8 +11,9 @@ import serial                   # 직렬 통신 모듈
 sys.path.append('/home/pi/hango-hardware/hardware/raspberry/module')
 
 # 내장모듈
-from module.Env import *
+from module.config import *
 from module.Http import Http
+from module.DataManager import DataManager
 from module.Speak import Espeak, Gspeak
 from module.Serial import Serial
     
@@ -27,7 +28,8 @@ def main():
     port.flushInput()
 
     # 음료수 정보 요청
-    Http.request_drinks()
+    response = Http.request_drinks()
+    DataManager.set_drinks(response)
 
     # 초기 사운드 메세지 설정
     Gspeak.set_message()

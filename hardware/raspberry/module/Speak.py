@@ -6,7 +6,7 @@ from pygame import mixer        # 음성출력 모듈
 
 # 내장모듈
 from Http import Http
-from Env import *
+from config import *
 
 
 class Gspeak:

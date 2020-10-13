@@ -2,7 +2,7 @@
 import serial                   # 직렬 통신 모듈
 
 # 내장모듈
-from Env import *
+from config import *
 
 class Serial :
 
