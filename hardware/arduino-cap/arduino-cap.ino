@@ -34,27 +34,16 @@ void loop()
   for (int i = 0; i < 8; ++i) {
     // If the capacitance reading is greater than the threshold, play a note:
     //Serial.print(keys[i].capacitiveSensor(NUM_OF_SAMPLES));
-    /*
-    Serial.print(keys[i].capacitiveSensor(NUM_OF_SAMPLES));
-    if (i != 7) {
-      Serial.print(",");
-    } else {
-      Serial.println();
-    }
-    */
+ 
     if (keys[i].capacitiveSensor(NUM_OF_SAMPLES) > 1000 ){
         hand = i+49;
         hand = char(hand); //Uart only recognize ascii values.
         hand_exist = true;
       
-        Serial.println(hand);
+        Serial.print(hand);
         break;
        }
   }
-  /*
-  if (hand_exist == false){
-    Serial.println("0");
-  }*/
 
   hand_exist = false;
   

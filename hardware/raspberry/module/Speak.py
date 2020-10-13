@@ -1,33 +1,55 @@
 # 외장모듈
 import os
 import sys                  # 시스템 모듈
-from gtts import gTTS           # TTS 모듈
+from gtts import gTTS          # TTS 모듈
 from pygame import mixer        # 음성출력 모듈
 
 # 내장모듈
 from Http import Http
-from Env import *
+from config import *
 
+# 음성 파일명 변수
+sound_msgs = {
+    'basic': {},
+    'position': {},
+    'sold': {},
+    'sold_out': {}
+}
 
 class Gspeak:
 
     @staticmethod
-    # 사운드 저장 함수
-    def save_sound(file_name, message):
-        # mp3 변환 및 출력, 한국어
-        tts = gTTS(text=message, lang='ko')
-        tts.save(f'sounds/{file_name}.mp3')
+    def get_sound_msgs():
+        '''
+            sound_msgs 반환 함수
+        '''
+
+        return sound_msgs
 
     @staticmethod
-    # 사운드 메세지 제작 함수
-    def set_message():
+    def save_sound(file_path, file_name, message):
+        print(file_path, file_name, message)
+        '''
+            사운드 저장 함수
+        '''
+
+        # mp3 변환 및 출력, 한국어
+        tts = gTTS(text=message, lang='ko')
+        tts.save(f'{RPI_FILE_PATH}/sounds/{file_path}/{file_name}.mp3')
+
+    @staticmethod
+    def set_message(drinks):
+        '''
+            사운드 메세지 제작 함수 
+        '''
+
         # 자판기의 모든 음료 정보를 하나의 문자열로 병합
         names = ""
         for i, name in enumerate(drinks["name"]):
             names += f"{str(i+1)}번 {name} "
 
         # 센싱되고 있지 않은 기본 상태 메세지
-        sound_msgs["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names}"
+        sound_msgs["basic"]["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names}"
 
         # 음료수 이름을 파일명으로 하고 메세지 만들기
         for idx in range(len(drinks["name"])):
@@ -39,9 +61,10 @@ class Gspeak:
             sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
 
     @staticmethod
-    # 자판기 음료수 중 수정된 것이 있는지, 없는지 반환하는 함수
-    def update_message():
-        
+    def update_message(drinks):
+        '''
+            자판기 음료수 중 수정된 것이 있는지, 없는지 반환하는 함수
+        '''
         # 서버로부터 전달된 음료수 이름들 순회
         for idx, drink_name in enumerate(drinks["name"]):
             # 사운드로 만들어지지 않은 음료수가 있다면 실행
@@ -52,7 +75,7 @@ class Gspeak:
                     names += f"{str(i+1)}번 {name} "
 
                 # 센싱되고 있지 않은 기본 상태 메세지
-                sound_msgs["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names}"
+                sound_msgs["basic"]["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names}"
                 # 손이 음료를 향해 위치한 상태 메세지
                 sound_msgs["position"][drinks["name"][idx]] = f"{drinks['name'][idx]} {str(drinks['price'][idx])}원. "
                 # 음료수가 팔린 상태
@@ -61,14 +84,18 @@ class Gspeak:
                 sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
 
     @staticmethod
-    # 구글 TTS로 말하는 함수
-    def say(option, status, drink_name=None):
+    def say(status, drink_name=None):
+        print(status, drink_name)
+        '''
+            구글 TTS로 말하는 함수
+        '''
+
         # 자판기 상태 검사
         if status == "basic":
             ''' 센싱되고 있지 않은 기본 상태 '''
 
             mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'sounds/basic.mp3')
+            mixer.music.load(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
             mixer.music.play()
         else:
             '''
@@ -80,7 +107,7 @@ class Gspeak:
             '''
 
             mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'sounds/{sound_msgs[status][drink_name]}.mp3')
+            mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3')
             mixer.music.play()
 
 
