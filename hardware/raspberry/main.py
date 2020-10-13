@@ -38,12 +38,9 @@ def main():
     sound_msgs = Gspeak.get_sound_msgs()
 
     # 음료수 이름을 파일명으로하는 사운드 만들고 저장
-    for key, value in sound_msgs.items() :
-        if key == 'basic' :
-            Gspeak.save_sound(key, key, value)
-        else :
-            for file_name, message in sound_msgs[key].items() :
-                Gspeak.save_sound(key, file_name, message)
+    # for file_path in sound_msgs.keys() :
+    #     for file_name, message in sound_msgs[file_path].items() :
+    #         Gspeak.save_sound(file_path, file_name, message)
 
     # 무한 반복
     while True:
@@ -56,10 +53,11 @@ def main():
             Serial.save_received_data(receive)
             received_keys = Serial.get_received_keys()
 
+            # 아두이노 센싱 데이터 불러오기
+            sensings = Serial.get_sensings()
+
             # 라즈베리파이가 가공할 데이터를 모두 수신 했다면 실행 
             if BASIC_KEYS.difference(received_keys) == set() :
-                # 아두이노 센싱 데이터 불러오기
-                sensings = Serial.get_sensings()
 
                 # 아두이노에서 센싱된 데이터가 있으면 실행 
                 if sensings["success"] :
@@ -78,7 +76,7 @@ def main():
 
                             # 판매된 음료수 정보 차감 요청
                             print("판매된 음료 차감 데이터를 요청하고 스피커 출력을 실행합니다.")
-                            response = Http.update_sold_drink()
+                            response = Http.update_sold_drink(sensings["sold_position"])
                             DataManager.check_drink_update(response)
 
                             # 스피커 출력

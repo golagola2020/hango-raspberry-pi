@@ -1,7 +1,7 @@
 # 외장모듈
 import os
 import sys                  # 시스템 모듈
-import gtts           # TTS 모듈
+from gtts import gTTS          # TTS 모듈
 from pygame import mixer        # 음성출력 모듈
 
 # 내장모듈
@@ -28,13 +28,14 @@ class Gspeak:
 
     @staticmethod
     def save_sound(file_path, file_name, message):
+        print(file_path, file_name, message)
         '''
             사운드 저장 함수
         '''
 
         # mp3 변환 및 출력, 한국어
         tts = gTTS(text=message, lang='ko')
-        tts.save(f'sounds/{file_path}/{file_name}.mp3')
+        tts.save(f'{RPI_FILE_PATH}/sounds/{file_path}/{file_name}.mp3')
 
     @staticmethod
     def set_message(drinks):
@@ -93,7 +94,7 @@ class Gspeak:
             ''' 센싱되고 있지 않은 기본 상태 '''
 
             mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'sounds/basic/basic.mp3')
+            mixer.music.load(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
             mixer.music.play()
         else:
             '''
@@ -105,7 +106,7 @@ class Gspeak:
             '''
 
             mixer.init(25100)  # 음성출력 속도 조절
-            mixer.music.load(f'sounds/{status}/{sound_msgs[status][drink_name]}.mp3')
+            mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{sound_msgs[status][drink_name]}.mp3')
             mixer.music.play()
 
 

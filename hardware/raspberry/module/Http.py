@@ -3,6 +3,8 @@ import requests, json           # HTTP 통신 및 JSON 모듈
 
 # 내장모듈
 import API
+from DataManager import DataManager
+from Serial import Serial
 from config import *
 
 
@@ -36,7 +38,7 @@ class Http:
   
   @staticmethod
   # 판매된 음료수 정보 차감 요청 함수
-  def update_sold_drink() :
+  def update_sold_drink(sold_position) :
     '''
         서버에게 판매된 음료수 정보를 전달하는 함수
 
@@ -45,16 +47,22 @@ class Http:
         CONTENT-TYPE : application/json
     '''
 
+    drinks = DataManager.get_drinks()
+    print(drinks)
     # 서버에게 요청할 데이터 생성
     drink = {
+        'user_id' : USER_ID,
         'serial_number' : SERIAL_NUMBER,  
-        'sold_position' : sensings["sold_position"] 
+        'drink' : {
+            'name' : drinks["name"][sold_position],
+            'price' : drinks["price"][sold_position],
+            'soldPosition' : sold_position
+        }
     }
-                            
-    print('sensings : ', sensings)
 
     # 서버 요청
     response = requests.post(API.UPDATE_DRINKS_PATH, data = drink)
+    print(response.text)
     # 응답 JSON 데이터 변환
     response = json.loads(response.text)
 
