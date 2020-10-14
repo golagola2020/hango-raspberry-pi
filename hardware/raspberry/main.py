@@ -14,7 +14,7 @@ sys.path.append('/home/pi/hango-hardware/hardware/raspberry/module')
 from module.config import *
 from module.Http import Http
 from module.DataManager import DataManager
-from module.Speak import Espeak, Gspeak
+from module.Speak import Gspeak
 from module.Serial import Serial
     
 # 메인 함수
@@ -27,22 +27,25 @@ def main():
     # 캐시 비우기
     port.flushInput()
 
-    # 음료수 정보 요청
-    response = Http.request_drinks()
-    DataManager.refresh_drinks(response)
+    # 인스턴스 생성
+    data_manager = DataManager()    # 음료 데이터 관리용 인스턴스
+    speak = Gspeak(25100)           # gTTS를 사용하여 Hango 음성 출력을 제공하는 인스턴스 => 인자는 음성 출력 속도
 
-    Gspeak.init(25100)
+    # 음료수 정보 요청
+    response = Http.request_drinks(SERIAL_NUMBER)
+    data_manager.refresh_drinks(response)
 
     # 초기 사운드 메세지 설정
-    drinks = DataManager.get_drinks()
-    Gspeak.set_message(drinks)
+    drinks = data_manager.get_drinks()
+    speak.refresh_message(drinks)
 
-    sound_msgs = Gspeak.get_sound_msgs()
+    # 설정된 메세지 오브젝트 불러오기
+    sound_msgs = speak.get_sound_msgs()
 
     # 음료수 이름을 파일명으로하는 사운드 만들고 저장
-    # for file_path in sound_msgs.keys() :
-    #     for file_name, message in sound_msgs[file_path].items() :
-    #         Gspeak.save_sound(file_path, file_name, message)
+    for file_path in sound_msgs.keys() :
+        for file_name, message in sound_msgs[file_path].items() :
+            speak.save_sound(file_path, file_name, message)
 
     # 무한 반복
     while True:
@@ -57,7 +60,7 @@ def main():
 
             # 아두이노 센싱 데이터 불러오기
             sensings = Serial.get_sensings()
-            print(sensings)
+            
             # 라즈베리파이가 가공할 데이터를 모두 수신 했다면 실행 
             if BASIC_KEYS.difference(received_keys) == set() :
 
@@ -73,17 +76,21 @@ def main():
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
                             Serial.current_sensing_data = sensings["sold_position"]
 
+                            drink = {
+                                'name' : drinks["name"][sensings["sold_position"]],
+                                'price' : drinks["price"][sensings["sold_position"]],
+                                'sold_position' : sensings["sold_position"]
+                            }
+
                             # 판매된 음료수 정보 차감 요청
                             print("판매된 음료 차감 데이터를 요청하고 스피커 출력을 실행합니다.")
-                            response = Http.update_sold_drink(drinks, sensings["sold_position"])
-                            DataManager.check_drink_update(response)
+                            response = Http.update_sold_drink(USER_ID, SERIAL_NUMBER, drink)
+                            data_manager.check_drink_update(response)
 
                             # 스피커 출력
                             print("스피커 출력을 실행합니다.")
-                            # Gspeak.exit()
-                            # Gspeak.say("sold", drinks["name"][sensings["sold_position"]])
-                            Gspeak.stop()
-                            Gspeak.say_who_pygame("sold", drinks["name"][sensings["sold_position"]])
+                            speak.stop()
+                            speak.say("sold", drinks["name"][sensings["sold_position"]])
                             
                     # 손이 음료 버튼에 위치했을 경우에 실행
                     elif sensings["sensed_position"] != -1 :
@@ -92,39 +99,37 @@ def main():
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
                             Serial.current_sensing_data = sensings["sensed_position"]
 
-                            # Gspeak.exit()
-                            Gspeak.stop()
+                            # speak.exit()
+                            speak.stop()
                             print("물체가 감지되어 스피커 출력을 실행합니다.")
 
                             # 해당 음료가 품절일 경우 실행
                             if drinks["count"][sensings["sensed_position"]] <= 0 :
                                 # 스피커 출력
-                                # Gspeak.say("sold_out", drinks["name"][sensings["sold_position"]])
-                                Gspeak.say_who_pygame("sold_out", drinks["name"][sensings["sensed_position"]])
+                                speak.say("sold_out", drinks["name"][sensings["sensed_position"]])
                             else :
                                 # 스피커 출력
-                                # Gspeak.say("position", drinks["name"][sensings["sold_position"]])
-                                Gspeak.say_who_pygame("position", drinks["name"][sensings["sensed_position"]])
+                                speak.say("position", drinks["name"][sensings["sensed_position"]])
                             
                     # 수신한 변수명 집합 비우기 => 다음 센싱 때에도 정상 수신하는지 검사하기 위함 
                     received_keys.clear()
             
-            # 
-            if "success" in sensings and Gspeak.is_available():
+            # 음성 출력이 가능하면 실행 => 이미 음성이 출력 중일 땐 실행되지 않는다.
+            if "success" in sensings and speak.is_available():
 
-                # 음료수 정보 요청 후 수정된 음료수가 있다면 사운드 파일 업데이트
+                # 음료수 정보 요청
                 print("센싱 데이터가 없습니다.\n서버로부터 음료 정보를 불러옵니다...")
-                response = Http.request_drinks()
-                DataManager.refresh_drinks(response)
-                drinks = DataManager.get_drinks()
-                Gspeak.update_message(drinks)
+                response = Http.request_drinks(SERIAL_NUMBER)
+                data_manager.refresh_drinks(response)
+
+                # 수정된 음료수가 있다면 사운드 파일 업데이트
+                drinks = data_manager.get_drinks()
+                speak.update_message(drinks)
 
                 # 스피커 출력
                 print("스피커 출력을 실행합니다.\n:인사말 ")
-                # Gspeak.exit()
-                # Gspeak.say("basic")
-                Gspeak.stop()
-                Gspeak.say_who_pygame("basic")
+                speak.stop()
+                speak.say("basic")
         else :
             print("수신 가능한 센싱 데이터가 아닙니다.")
                 
