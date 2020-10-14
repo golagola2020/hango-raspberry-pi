@@ -1,7 +1,6 @@
 #include <solded.h>
 #include <math.h>
 
-
 #define MAX_LINE 2          // 자판기 전체 라인 수
 #define MAX_POSITION 4      // 자판기 한 라인의 칸 수
 #define PIN_COUNT 2         // 핀 개수
@@ -17,7 +16,7 @@ const int echoPin[PIN_COUNT] = {5, 7};
 long duration[PIN_COUNT], distance[PIN_COUNT];
 
 int drinks_numbers[MAX_LINE][(MAX_POSITION / MAX_LINE) + 1]; //음료 번호 지정 ex.1,2,3,4 ...
-int sold_position = 0;                                      //선택되어 판매되는 음료수, -1은 음료가 판매되지 않았음을 의미
+int sold_position = -1;                                      //선택되어 판매되는 음료수, -1은 음료가 판매되지 않았음을 의미
 
 int sensed_position;
 
@@ -53,18 +52,25 @@ void loop() {
   for (int i = 0; i < MAX_LINE; i++) {
     solded solded(distance[i],i,BOTH_SIDE_SPACE,MAX_POSITION,BUTTON_RANGE);
     sold_position = solded.calculate_sold();
-    if (sold_position != 0) break;
+    if (sold_position == 0) {
+      sold_position = -1;
+      break;
+    }
+    if (sold_position != 0){
+      sold_position = sold_position-1;
+      break;
+    }
   }
 
 
   if (Serial.available()) {
     char data = Serial.read();
     if (data >= 49 && data <= 56 ) {
-      sensed_position = int(data - 48);
+      sensed_position = int(data - 49);
     }
   }
   else {
-    sensed_position = 0;
+    sensed_position = -1;
   }
 
 //
@@ -86,6 +92,6 @@ void loop() {
 
   delay(500); //음료수 떨어지는 속도에 따라 알아서 조절할것
 
-  sold_position = 0; //초기화
+  sold_position = -1; //초기화
 
 }

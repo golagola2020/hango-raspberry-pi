@@ -29,7 +29,9 @@ def main():
 
     # 음료수 정보 요청
     response = Http.request_drinks()
-    DataManager.set_drinks(response)
+    DataManager.refresh_drinks(response)
+
+    Gspeak.init(25100)
 
     # 초기 사운드 메세지 설정
     drinks = DataManager.get_drinks()
@@ -38,9 +40,9 @@ def main():
     sound_msgs = Gspeak.get_sound_msgs()
 
     # 음료수 이름을 파일명으로하는 사운드 만들고 저장
-    for file_path in sound_msgs.keys() :
-        for file_name, message in sound_msgs[file_path].items() :
-            Gspeak.save_sound(file_path, file_name, message)
+    # for file_path in sound_msgs.keys() :
+    #     for file_name, message in sound_msgs[file_path].items() :
+    #         Gspeak.save_sound(file_path, file_name, message)
 
     # 무한 반복
     while True:
@@ -95,27 +97,25 @@ def main():
                             print("물체가 감지되어 스피커 출력을 실행합니다.")
 
                             # 해당 음료가 품절일 경우 실행
-                            if drinks["count"][sensings["sensed_position"]-1] <= 0 :
+                            if drinks["count"][sensings["sensed_position"]] <= 0 :
                                 # 스피커 출력
                                 # Gspeak.say("sold_out", drinks["name"][sensings["sold_position"]])
-                                Gspeak.say_who_pygame("sold_out", drinks["name"][sensings["sold_position"]])
+                                Gspeak.say_who_pygame("sold_out", drinks["name"][sensings["sensed_position"]])
                             else :
                                 # 스피커 출력
                                 # Gspeak.say("position", drinks["name"][sensings["sold_position"]])
-                                Gspeak.say_who_pygame("position", drinks["name"][sensings["sold_position"]])
+                                Gspeak.say_who_pygame("position", drinks["name"][sensings["sensed_position"]])
                             
                     # 수신한 변수명 집합 비우기 => 다음 센싱 때에도 정상 수신하는지 검사하기 위함 
                     received_keys.clear()
             
-            # 감지 정보가 새로운 감지 정보와 다르면 실행 => 같은 말을 반복하지 않기 위함
-            if "success" in sensings and Serial.current_sensing_data != "basic" :
-                # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
-                Serial.current_sensing_data = "basic"
+            # 
+            if "success" in sensings and Gspeak.is_available():
 
                 # 음료수 정보 요청 후 수정된 음료수가 있다면 사운드 파일 업데이트
                 print("센싱 데이터가 없습니다.\n서버로부터 음료 정보를 불러옵니다...")
                 response = Http.request_drinks()
-                DataManager.set_drinks(response)
+                DataManager.refresh_drinks(response)
                 drinks = DataManager.get_drinks()
                 Gspeak.update_message(drinks)
 

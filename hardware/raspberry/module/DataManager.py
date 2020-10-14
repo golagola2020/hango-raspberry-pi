@@ -21,7 +21,7 @@ class DataManager:
     return drinks
 
   @staticmethod
-  def set_drinks(response={'success': False}):
+  def refresh_drinks(response={'success': False}):
     '''
         서버에서 전달받은 데이터를 전역변수로 설정하는 함수
     '''

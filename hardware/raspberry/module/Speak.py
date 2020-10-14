@@ -135,6 +135,10 @@ class Gspeak:
             os.system("killall -9 omxplayer omxplayer.bin")
 
     @staticmethod
+    def init(speed):
+        mixer.init(speed)  # 음성출력 속도 조절
+
+    @staticmethod
     def say_who_pygame(status, drink_name='basic'):
         print(status, drink_name)
         '''
@@ -148,7 +152,6 @@ class Gspeak:
                 4. sold_out : 음료수 품절 상태
         '''
 
-        mixer.init(25100)  # 음성출력 속도 조절
         mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3')
         mixer.music.play()
 
@@ -164,8 +167,15 @@ class Gspeak:
         '''
             pygame 음성 종료 함수
         '''
+        if mixer.music.get_busy():
+            mixer.music.stop()
 
-        mixer.music.stop()
+    @staticmethod
+    def is_available():
+
+        if mixer.music.get_busy():
+            return False
+        return True
 
 
 class Espeak:
