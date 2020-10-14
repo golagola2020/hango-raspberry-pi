@@ -16,7 +16,7 @@ SPEAK_OPTION = '-v ko+f3 -s 160 -p 95'
 BASIC_KEYS = {'success', 'sensed_position', 'sold_position'}
 
 # RPi File Path
-RPI_FILE_PATH = f'{os.getcwd()}'
+RPI_FILE_PATH = '/home/pi/hango-hardware/hardware/raspberry'
 
 
 
