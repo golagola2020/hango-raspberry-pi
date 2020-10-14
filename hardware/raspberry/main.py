@@ -55,7 +55,7 @@ def main():
 
             # 아두이노 센싱 데이터 불러오기
             sensings = Serial.get_sensings()
-
+            print(sensings)
             # 라즈베리파이가 가공할 데이터를 모두 수신 했다면 실행 
             if BASIC_KEYS.difference(received_keys) == set() :
 
@@ -73,13 +73,14 @@ def main():
 
                             # 판매된 음료수 정보 차감 요청
                             print("판매된 음료 차감 데이터를 요청하고 스피커 출력을 실행합니다.")
-                            response = Http.update_sold_drink(drinks, sensings["sold_position"]+1)
+                            response = Http.update_sold_drink(drinks, sensings["sold_position"])
                             DataManager.check_drink_update(response)
 
                             # 스피커 출력
                             print("스피커 출력을 실행합니다.")
-                            Gspeak.exit()
-                            Gspeak.say("sold", drinks["name"][sensings["sold_position"]-1])
+                            # Gspeak.exit()
+                            # Gspeak.say("sold", drinks["name"][sensings["sold_position"]])
+                            Gspeak.say_who_pygame("sold", drinks["name"][sensings["sold_position"]])
                             
                     # 손이 음료 버튼에 위치했을 경우에 실행
                     elif sensings["sensed_position"] != -1 :
@@ -88,38 +89,39 @@ def main():
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
                             Serial.current_sensing_data = sensings["sensed_position"]
 
-                            Gspeak.exit()
+                            # Gspeak.exit()
                             print("물체가 감지되어 스피커 출력을 실행합니다.")
 
                             # 해당 음료가 품절일 경우 실행
                             if drinks["count"][sensings["sensed_position"]-1] <= 0 :
                                 # 스피커 출력
-                                Gspeak.say("sold_out", drinks["name"][sensings["sold_position"]-1])
+                                # Gspeak.say("sold_out", drinks["name"][sensings["sold_position"]])
+                                Gspeak.say_who_pygame("sold_out", drinks["name"][sensings["sold_position"]])
                             else :
                                 # 스피커 출력
-                                Gspeak.say("position", drinks["name"][sensings["sold_position"]-1])
+                                # Gspeak.say("position", drinks["name"][sensings["sold_position"]])
+                                Gspeak.say_who_pygame("position", drinks["name"][sensings["sold_position"]])
                             
                     # 수신한 변수명 집합 비우기 => 다음 센싱 때에도 정상 수신하는지 검사하기 위함 
                     received_keys.clear()
-                        
-            # 아두이노에서 False만 보냈을 경우 => 아두이노에서 센싱된 데이터가 없으면 실행
-            elif received_keys == {"success"} and sensings["success"] == False :
-                # 감지 정보가 새로운 감지 정보와 다르면 실행 => 같은 말을 반복하지 않기 위함
-                if Serial.current_sensing_data != sensings["success"] :
-                    # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
-                    Serial.current_sensing_data = sensings["success"]
+            
+            # 감지 정보가 새로운 감지 정보와 다르면 실행 => 같은 말을 반복하지 않기 위함
+            if "success" in sensings and Serial.current_sensing_data != "basic" :
+                # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
+                Serial.current_sensing_data = "basic"
 
-                    # 음료수 정보 요청 후 수정된 음료수가 있다면 사운드 파일 업데이트
-                    print("센싱 데이터가 없습니다.\n서버로부터 음료 정보를 불러옵니다...")
-                    response = Http.request_drinks()
-                    DataManager.set_drinks(response)
-                    drinks = DataManager.get_drinks()
-                    Gspeak.update_message(drinks)
+                # 음료수 정보 요청 후 수정된 음료수가 있다면 사운드 파일 업데이트
+                print("센싱 데이터가 없습니다.\n서버로부터 음료 정보를 불러옵니다...")
+                response = Http.request_drinks()
+                DataManager.set_drinks(response)
+                drinks = DataManager.get_drinks()
+                Gspeak.update_message(drinks)
 
-                    # 스피커 출력
-                    print("스피커 출력을 실행합니다.\n:인사말 ")
-                    Gspeak.exit()
-                    Gspeak.say("basic")
+                # 스피커 출력
+                print("스피커 출력을 실행합니다.\n:인사말 ")
+                # Gspeak.exit()
+                # Gspeak.say("basic")
+                Gspeak.say_who_pygame("basic")
         else :
             print("수신 가능한 센싱 데이터가 아닙니다.")
                 

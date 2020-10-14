@@ -1,8 +1,8 @@
 # 외장모듈
 import os
-import sys                  # 시스템 모듈
+import sys, time                  # 시스템 모듈
 from gtts import gTTS          # TTS 모듈
-from pygame import mixer        # 음성출력 모듈
+from pygame import mixer
 
 # 내장모듈
 from Http import Http
@@ -49,19 +49,19 @@ class Gspeak:
         # 자판기의 모든 음료 정보를 하나의 문자열로 병합
         names = ""
         for i, name in enumerate(drinks["name"]):
-            names += f"{str(i+1)}번 {name} "
+            names += f"{str(i+1)}번 {name}, "
 
         # 센싱되고 있지 않은 기본 상태 메세지
-        sound_msgs["basic"]["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names}"
+        sound_msgs["basic"]["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names} 감사합니다. 저는 행고입니다. 웃음 웃음 "
 
         # 음료수 이름을 파일명으로 하고 메세지 만들기
         for idx in range(len(drinks["name"])):
             # 손이 음료를 향해 위치한 상태 메세지
-            sound_msgs["position"][drinks["name"][idx]] = f"{drinks['name'][idx]} {str(drinks['price'][idx])}원. "
+            sound_msgs["position"][drinks["name"][idx]] = f"{drinks['name'][idx]}. {str(drinks['price'][idx])}원입니다아 ."
             # 음료수가 팔린 상태
-            sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오. "
+            sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오 ."
             # 음료수 품절 상태
-            sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
+            sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]}, 품절입니다아 ."
 
     @staticmethod
     def update_message(drinks):
@@ -89,7 +89,7 @@ class Gspeak:
     @staticmethod
     def say(status, drink_name='basic'):
         
-        print(status, drink_name)
+        print(f'status : {status}, drink_name : {drink_name}')
         '''
             말하는 함수
 
@@ -107,7 +107,10 @@ class Gspeak:
 
         if pid == 0:
             # Start Sound File.
-            os.system(f"omxplayer -o local {RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3")
+            os.system(f"omxplayer -o local '{RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3'")
+
+            # 자식 프로세스 종료
+            sys.exit(0)
 
         # 부모 프로세스가 실행하는 구문
         # 센싱이 기본 상태가 아니면 실행
@@ -123,12 +126,13 @@ class Gspeak:
         '''
             실행중인 'omxplayer' 프로세스 종료
         '''
+        global pid
 
         # 할당된 프로세스가 있다면 실행
         if pid:
             # 자식프로세스 아이디 출력 후 종료
             print(pid, "omxplayer 프로세스를 종료합니다.")
-            os.system("killall -9 omxplayer.bin")
+            os.system("killall -9 omxplayer omxplayer.bin")
 
     @staticmethod
     def say_who_pygame(status, drink_name='basic'):
