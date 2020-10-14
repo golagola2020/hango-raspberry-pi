@@ -1,8 +1,8 @@
 # 외장모듈
 import os
-import sys, time                  # 시스템 모듈
+import sys                     # 시스템 모듈
 from gtts import gTTS          # TTS 모듈
-from pygame import mixer
+from pygame import mixer, time
 
 # 내장모듈
 from Http import Http
@@ -138,7 +138,7 @@ class Gspeak:
     def say_who_pygame(status, drink_name='basic'):
         print(status, drink_name)
         '''
-            pygame 로 말하는 함수
+            pygame으로 말하는 함수
 
             각 상태에 따라 출력 메세지가 달라진다.
                 
@@ -151,6 +151,21 @@ class Gspeak:
         mixer.init(25100)  # 음성출력 속도 조절
         mixer.music.load(f'{RPI_FILE_PATH}/sounds/{status}/{drink_name}.mp3')
         mixer.music.play()
+
+        # 'basic' 상태가 아니면 실행 중인 음성 파일이 종료될 때까지 대기시킨다.
+        if status != 'basic':
+            clock = time.Clock()
+            while mixer.music.get_busy():
+                print("음성 출력 중...")
+                clock.tick(1000)    # 재생 시간 연장
+    
+    @staticmethod
+    def stop():
+        '''
+            pygame 음성 종료 함수
+        '''
+
+        mixer.music.stop()
 
 
 class Espeak:
