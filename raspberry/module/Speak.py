@@ -71,18 +71,23 @@ class Gspeak:
             # 사운드로 만들어지지 않은 음료수가 있다면 실행
             if drink_name not in self.sound_msgs["position"]:
                 # 자판기의 모든 음료 정보를 하나의 문자열로 병합
+                print(f'추가된 음료 : {drink_name}\n{drink_name} 음성 파일을 생성합니다...')
                 names = ""
                 for i, name in enumerate(drinks["name"]):
                     names += f"{str(i+1)}번 {name} "
 
                 # 센싱되고 있지 않은 기본 상태 메세지
                 self.sound_msgs["basic"]["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names}"
+                self.save_sound('basic', 'basic', self.sound_msgs["basic"]["basic"])
                 # 손이 음료를 향해 위치한 상태 메세지
                 self.sound_msgs["position"][drinks["name"][idx]] = f"{drinks['name'][idx]} {str(drinks['price'][idx])}원. "
+                self.save_sound('position', drinks["name"][idx], self.sound_msgs["position"][drinks["name"][idx]])
                 # 음료수가 팔린 상태
                 self.sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오. "
+                self.save_sound('sold', drinks["name"][idx], self.sound_msgs["sold"][drinks["name"][idx]])
                 # 음료수 품절 상태
                 self.sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['name'][idx]} 품.절. "
+                self.save_sound('sold_out', drinks["name"][idx], self.sound_msgs["sold_out"][drinks["name"][idx]])
 
     def say(self, folder_name, sound_name='basic'):
         '''
