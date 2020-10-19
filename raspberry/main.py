@@ -19,13 +19,21 @@ from module.Serial import Serial
     
 # 메인 함수
 def main():
-    # 아두이노와 시리얼 통신할 인스턴스 생성 
-    port = serial.Serial(
-        port = PORT,
-        baudrate = 9600
-    )
-    # 캐시 비우기
-    port.flushInput()
+    try:
+        # 아두이노와 시리얼 통신할 인스턴스 생성 
+        port = serial.Serial(
+            port = PORT,
+            baudrate = 9600
+        )
+        print(f'아두이노로부터 데이터를 수신합니다.\n현 메세지 출력 후 동작이 멈췄다면 아두이노와 라즈베리파이의 시리얼 포트가 일치하는지 config.py를 확인해주십시오.\n현재 포트 : {PORT}')
+        # 캐시 비우기
+        port.flushInput()
+    except:
+        print(f'오류 : {PORT} -> 잘못된 PORT 입니다.\nconfig.py를 수정해주십시오.')
+        exit(1)
+
+    # 아두이노 센싱 데이터 한 줄 단위로 수신 -> 현 시리얼 포트가 통신 가능한지 테스트용으로 먼저 수신해보는 것.
+    receive = Serial.get_receive_data(port)
 
     # 인스턴스 생성
     data_manager = DataManager()    # 음료 데이터 관리용 인스턴스
