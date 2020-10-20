@@ -65,7 +65,12 @@ class Serial:
     # 수신한 변수명이 라즈베리파이에서 가공하고자하는 변수명들 중에 존재하는지 검사
     if receive != [] and receive[0] in BASIC_KEYS:
       # 존재한다면 수신 데이터 반환
-      return True
+      try:
+        # 수신한 VALUE 값이 정수로 변환이 되는 경우만 True 응답
+        int(receive[1])
+        return True
+      except:
+        return False
 
     # 존재하지 않는다면 False 반환
     return False
