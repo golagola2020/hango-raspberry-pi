@@ -8,7 +8,7 @@ import os, sys                  # 시스템 모듈
 import serial                   # 직렬 통신 모듈
 
 # 경로설정
-sys.path.append('/home/pi/hango-hardware/hardware/raspberry/module')
+sys.path.append(f'{os.path.dirname(os.path.realpath(__file__))}/module')
 
 # 내장모듈
 from module.config import *
@@ -53,6 +53,7 @@ def main():
     # 음료수 이름을 파일명으로하는 사운드 만들고 저장
     for file_path in sound_msgs.keys() :
         for file_name, message in sound_msgs[file_path].items() :
+            print(file_path, file_name, message)
             speak.save_sound(file_path, file_name, message)
 
     # 무한 반복
@@ -99,6 +100,19 @@ def main():
                             print("스피커 출력을 실행합니다.")
                             speak.stop()
                             speak.say("sold", drinks["name"][sensings["sold_position"]])
+
+                    elif sensings["duplicate"] :
+                        # 감지 정보가 새로운 감지 정보와 다르면 실행 => 같은 말을 반복하지 않기 위함
+                        if Serial.current_sensing_data != sensings["duplicate"] :
+                            # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
+                            Serial.current_sensing_data = sensings["duplicate"]
+
+                            # speak.exit()
+                            speak.stop()
+                            print("물체가 감지되어 스피커 출력을 실행합니다.")
+
+                            # 스피커 출력
+                            speak.say("duplicate", "duplicate")
                             
                     # 손이 음료 버튼에 위치했을 경우에 실행
                     elif sensings["sensed_position"] != -1 :

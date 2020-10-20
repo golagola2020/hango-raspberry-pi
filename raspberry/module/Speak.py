@@ -15,6 +15,7 @@ class Gspeak:
         self.sound_msgs = {
             'basic': {},
             'position': {},
+            'duplicate': {},
             'sold': {},
             'sold_out': {}
         }
@@ -52,6 +53,9 @@ class Gspeak:
 
         # 센싱되고 있지 않은 기본 상태 메세지
         self.sound_msgs["basic"]["basic"] = f"안녕하세요. 말하는 음료수 자판기입니다. 지금부터 음료수 위치와 이름을 말씀드리겠습니다. {names} 감사합니다. 저는 행고입니다. 웃음 웃음 "
+
+        # 센서를 2개 이상 선택했을 때의 상태 메세지
+        self.sound_msgs["duplicate"]["duplicate"] = "두 가지 이상의 입력이 감지되었습니다. 하나만 선택해주십시오."
 
         # 음료수 이름을 파일명으로 하고 메세지 만들기
         for idx in range(len(drinks["name"])):
@@ -97,8 +101,9 @@ class Gspeak:
                 
                 1. basic : 센싱되고 있지 않은 기본 상태
                 2. position : 손이 음료를 향해 위치한 상태
-                3. sold : 음료수가 팔린 상태
-                4. sold_out : 음료수 품절 상태
+                3. duplicate : 센서를 2개 이상 선택했을 때의 상태 메세지
+                4. sold : 음료수가 팔린 상태
+                5. sold_out : 음료수 품절 상태
         '''
 
         # 폴더명과 사운드명 출력
