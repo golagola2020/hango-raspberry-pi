@@ -53,7 +53,7 @@ class Http:
         'serial_number' : SERIAL_NUMBER,
         'drink_name' : drink['name'],
         'drink_price' : drink['price'],
-        'drink_sold_position' : drink['sold_position']
+        'drink_sold_position' : drink['sold_position'] + 1
     }
 
     # 서버 요청
