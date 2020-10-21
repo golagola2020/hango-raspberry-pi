@@ -8,7 +8,8 @@ import os, sys                  # 시스템 모듈
 import serial                   # 직렬 통신 모듈
 
 # 경로설정
-sys.path.append(f'{os.path.dirname(os.path.realpath(__file__))}/module')
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(f'{CURRENT_PATH}/module')
 
 # 내장모듈
 from module.config import *
@@ -29,7 +30,7 @@ def main():
         # 캐시 비우기
         port.flushInput()
     except:
-        print(f'오류 : {PORT} -> 잘못된 PORT 입니다.\nconfig.py를 수정해주십시오.')
+        print(f'오류 : {PORT} -> 잘못된 신호입니다.\n시리얼 모니터를 꺼주시거나 연결된 포트가 올바른지 config.py를 확인해주십시오.')
         exit(1)
 
     # 아두이노 센싱 데이터 한 줄 단위로 수신 -> 현 시리얼 포트가 통신 가능한지 테스트용으로 먼저 수신해보는 것.
@@ -49,12 +50,19 @@ def main():
 
     # 설정된 메세지 오브젝트 불러오기
     sound_msgs = speak.get_sound_msgs()
-
+    
     # 음료수 이름을 파일명으로하는 사운드 만들고 저장
     for file_path in sound_msgs.keys() :
+        try :
+            file_name_items = os.listdir(f"{CURRENT_PATH}/sounds/{file_path}")
+        except :
+            print(f"'main.py'와 같은 경로에 'sounds' 폴더가 존재하는지 확인해주십시오.\n'sounds' 폴더 안에는 'basic', 'position', 'duplicate', 'sold', 'soldout' 폴더가 필수로 존재해야 합니다.")
+            exit()
         for file_name, message in sound_msgs[file_path].items() :
-            print(file_path, file_name, message)
-            speak.save_sound(file_path, file_name, message)
+            # 이미 만들어진 음성 파일이 아닐 경우에만 새로 만든다
+            if file_name+'.mp3' not in file_name_items :
+                print(f"음성 파일 생성\nFILE_PATH : {file_path}\nFILE_NAME : {file_name}\nMESSAGE : {message}")
+                speak.save_sound(file_path, file_name, message)
 
     # 무한 반복
     while True:
@@ -77,13 +85,16 @@ def main():
                 if sensings["success"] :
                     # 출력
                     print("센싱 데이터 수신 성공")
+
+                    # 캐시 비우기
+                    port.flushInput()
                     
                     # 판매된 음료수가 있을 경우에 실행
                     if sensings["sold_position"] != -1 :
                         # 감지 정보가 새로운 감지 정보와 다르면 실행 => 같은 말을 반복하지 않기 위함
                         if Serial.current_sensing_data != sensings["sold_position"] :
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
-                            Serial.current_sensing_data = sensings["sold_position"]
+                            Serial.current_sensing_data = f"sold_position {sensings['sold_position']}"
 
                             drink = {
                                 'name' : drinks["name"][sensings["sold_position"]],
@@ -97,15 +108,22 @@ def main():
                             data_manager.check_drink_update(response)
 
                             # 스피커 출력
-                            print("스피커 출력을 실행합니다.")
                             speak.stop()
-                            speak.say("sold", drinks["name"][sensings["sold_position"]])
+                            print("스피커 출력을 실행합니다.")
+
+                            # 해당 음료가 품절일 경우 실행
+                            if drinks["count"][sensings["sold_position"]] <= 0 :
+                                # 스피커 출력
+                                speak.say("sold_out", drinks["name"][sensings["sold_position"]])
+                            else :
+                                # 스피커 출력
+                                speak.say("sold", drinks["name"][sensings["sold_position"]])
 
                     elif sensings["duplicate"] :
                         # 감지 정보가 새로운 감지 정보와 다르면 실행 => 같은 말을 반복하지 않기 위함
                         if Serial.current_sensing_data != sensings["duplicate"] :
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
-                            Serial.current_sensing_data = sensings["duplicate"]
+                            Serial.current_sensing_data = f"duplicate {sensings['duplicate']}"
 
                             # speak.exit()
                             speak.stop()
@@ -119,7 +137,7 @@ def main():
                         # 감지 정보가 새로운 감지 정보와 다르면 실행 => 같은 말을 반복하지 않기 위함
                         if Serial.current_sensing_data != sensings["sensed_position"] :
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
-                            Serial.current_sensing_data = sensings["sensed_position"]
+                            Serial.current_sensing_data = f"sensed_position {sensings['sensed_position']}"
 
                             # speak.exit()
                             speak.stop()
