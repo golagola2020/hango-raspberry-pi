@@ -1,4 +1,4 @@
-# hango-raspberry-pi (행고 라즈베리파)
+# hango-raspberry-pi (행고 라즈베리파이)
 > 주의 : [GitHub Pages](https://pages.github.com/)에 대해서 충분히 숙지할 것.  
 주의 : [Collaborating with issues and pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests)을 정독할 것
 
