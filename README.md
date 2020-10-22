@@ -76,6 +76,36 @@
    USER_ID = 자판기_소유자_아이디  # 모바일에서 회원가입한 유저 아이디를 의미한다. 초기 데이터 셋은 'rltn123'으로 하면 잘 동작할 것임
    SERIAL_NUMBER = 자판기_고유_번호 # 자판기마다 부여되는 고유번호를 의미한다. [hango-server](https://github.com/golagola2020/hango-server)의 고객 관리 시스템에서 등록할 수 있다. 초기 데이터 셋은 '20200814042555141'으로 하면 잘 동작할 것임
    ```
+   3. [API.py]() 서버 데이터 요청 및 응답 경로 설정 파일 수정
+      * 해당 API.py를 수정해도 되지만, 보안을 위해 OS에 직접 환경 변수를 등록하는 것을 권장합니다.
+      ```
+      vi API.py
+      ```
+      ```python3
+      URL = http://127.0.0.1:9700  # 행고 웹서버는 9700포트에서 가동되기 때문에 9700 포트와 포워딩을 시켜주는 것.
+      ```
+      * 환경 변수로 등록하는 방법
+         1. API.py 설정
+         ```python3
+         import os       # 시스템 모듈
+
+         # 데이터 요청 Domain 선언
+         URL = str(os.environ['HANGO_URL'])  # 초기 설정대로 두면 된다. 변경할 필요 없음.
+         ```
+         2. OS 환경 변수 설정
+            * .bashrc 파일 가장 하단에 HANGO_URL 등록
+         ```
+         $ vi ~/.bashrc
+         ```
+         ```
+         # 가장 하단에 아래 코드 추가할 것
+         export HANGO_URL="http://127.0.0.1:9700"
+         ```
+         3. 수정된 .bashrc 파일 적용
+            * 재부팅을 하는 방법도 있으나 아래 명령어로 간단하게 적용할 수 있음.
+         ```
+         source ~/.bashrc
+         ```
    3. 실행
       * hango-raspberry-pi 루트 경로의 raspberry 폴더 안에 있는 [main.py](https://github.com/golagola2020/hango-raspberry-pi/blob/master/raspberry/main.py) 실행
       * 주의 : 해당 경로까지 이동한 뒤에 실행시켜야 합니다.
