@@ -127,12 +127,8 @@
    1. 포크 동기화 [Syncing a fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
    2. Pull Request 보내기 [Creating a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
    
-## 데모
-#### 클라이언트 데모
-> v1.0 : https://youtu.be/D2CXURqW8qs
-#### 모바일 데모
-> v1.0 : https://youtu.be/K7cLH89WKPQ
-
+## 가이드 데모
+[![Watch the video](https://user-images.githubusercontent.com/56839474/96984452-6d023300-155b-11eb-9686-f7b46d721b3f.png)](https://youtu.be/suJCUtuc3GM)
 
 ## 기여하기
 [CONTRIBUTING.md](https://github.com/golagola2020/hango-raspberry-pi/blob/master/CONTRIBUTING.md) 를 읽으신 후 기여를 해주십시오.     
