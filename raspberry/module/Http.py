@@ -29,10 +29,16 @@ class Http:
         'serial_number': serial_number
     }
 
-    # 서버 요청
-    response = requests.post(API.READ_DRINKS_PATH, data=drink)
-    # 응답 JSON 데이터 변환
-    response = json.loads(response.text)
+    try:
+        # 서버 요청
+        response = requests.post(API.READ_DRINKS_PATH, data=drink)
+        
+        # 응답 JSON 데이터 변환
+        response = json.loads(response.text)
+    except:
+        # HTTP 연결 오류
+        print(f'서버 요청 경로 : {API} -> 잘못된 요청 시도\n데이터 요청 중 오류가 발생하였습니다. 요청할 서버의 URL 혹은 상태가 올바른지 확인해주십시오.')
+        exit(1)
 
     return response
   
@@ -56,11 +62,16 @@ class Http:
         'drink_sold_position' : drink['sold_position'] + 1
     }
 
-    # 서버 요청
-    response = requests.post(API.UPDATE_DRINKS_PATH, data = request)
-    
-    # 응답 JSON 데이터 변환
-    response = json.loads(response.text)
+    try:
+        # 서버 요청
+        response = requests.post(API.UPDATE_DRINKS_PATH, data = request)
+        
+        # 응답 JSON 데이터 변환
+        response = json.loads(response.text)
+    except:
+        # HTTP 연결 오류
+        print(f'서버 요청 경로 : {API} -> 잘못된 요청 시도\n데이터 요청 중 오류가 발생하였습니다. 요청할 서버의 URL 혹은 상태가 올바른지 확인해주십시오.')
+        exit(1)
 
     return response
 
