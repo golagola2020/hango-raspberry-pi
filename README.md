@@ -1,4 +1,4 @@
-# hango-raspberry-pi (행고 라즈베리파)
+# hango-raspberry-pi (행고 라즈베리파이)
 > 주의 : [GitHub Pages](https://pages.github.com/)에 대해서 충분히 숙지할 것.  
 주의 : [Collaborating with issues and pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests)을 정독할 것
 
@@ -16,13 +16,13 @@
 ## 시작하기에 앞서
 [hango-raspberry-pi](https://github.com/golagola2020/hango-raspberry-pi) 프로젝트를 실행시키기 위한 도구 및 프로그램 설치
    1. pip 설치
-   ```
-   $ sudo apt-get install python-pip
-   ```
+      ```
+      $ sudo apt-get install python-pip
+      ```
    2. virtualenv 설치
-   ```
-   $ sudo pip install virtualenv
-   ```
+      ```
+      $ sudo pip install virtualenv
+      ```
 
 ## 설치(로컬)
 > 주의 : 패키지 충돌을 방지하기 위해 가상환경에 설치하는 것을 권장합니다.
@@ -35,74 +35,100 @@
    
 * https://github.com/golagola2020/hango-raspberry-pi 에 push 권한이 있다면 :  
    * git fetch or pull or clone
-   ```
-   $ git clone https://github.com/golagola2020/hango-raspberry-pi.git
-   $ cd hango-server
-   ```
+      ```
+      $ git clone https://github.com/golagola2020/hango-raspberry-pi.git
+      $ cd hango-server
+      ```
 
 * https://github.com/golagola2020/hango-raspberry-pi 에 push 권한이 없다면 :  
    1. https://github.com/golagola2020/hango-raspberry-pi 에서 ```Fork```버튼 클릭하고,
    2. 포크 저장소 계정(maybe 개인 계정) 선택
    3. git fetch or pull or clone
-   ```
-   # 포크한 저장소 clone
-   $ git clone https://github.com:YOUR_GITHUB_ACCOUNT/hango-raspberry-pi.git
-   $ cd hango-server
-   
-   # hango-server 레포지터리를 upstream으로 리모트 설정
-   $ git remote add upstream https://github.com/golagola2020/hango-raspberry-pi.git
-   
-   # 로컬 코드와 hango-server 동기화
-   $ git fetch upstream
-   $ git checkout master
-   $ git merge upstream/master
-   ```
+      ```
+      # 포크한 저장소 clone
+      $ git clone https://github.com:YOUR_GITHUB_ACCOUNT/hango-raspberry-pi.git
+      $ cd hango-server
+
+      # hango-server 레포지터리를 upstream으로 리모트 설정
+      $ git remote add upstream https://github.com/golagola2020/hango-raspberry-pi.git
+
+      # 로컬 코드와 hango-server 동기화
+      $ git fetch upstream
+      $ git checkout master
+      $ git merge upstream/master
+      ```
 
 ## 실행(로컬)
 > 주의 : 먼저, [설치](https://github.com/golagola2020/hango-raspberry-pi#설치로컬)를 통해 hango-raspberry-pi를 설치해주십시오.    
 > 주의 : 아래 명령은 hango-raspberry-pi의 [requirements.txt](https://github.com/golagola2020/hango-raspberry-pi/blob/master/requirements.txt) 파일이 있는 루트 경로에서 실행되어야 합니다.
    1. 패키지 설치하기
-   ```
-   $ pip install -r requirements.txt
-   ```
+      ```
+      $ pip install -r requirements.txt
+      ```
    2. [config.py](https://github.com/golagola2020/hango-raspberry-pi/blob/master/raspberry/module/config.py) 설정 파일 수정
       * /mobule 로 이동 후 수정
-   ```
-   $ cd raspberry/module
-   $ vi config.py
-   ```      
-   ```python3
-   PORT = 아두이노_시리얼_포트
-   USER_ID = 자판기_소유자_아이디  # 모바일에서 회원가입한 유저 아이디를 의미한다. 초기 데이터 셋은 'rltn123'으로 하면 잘 동작할 것임
-   SERIAL_NUMBER = 자판기_고유_번호 # 자판기마다 부여되는 고유번호를 의미한다. [hango-server](https://github.com/golagola2020/hango-server)의 고객 관리 시스템에서 등록할 수 있다. 초기 데이터 셋은 '20200814042555141'으로 하면 잘 동작할 것임
-   ```
+      ```
+      $ cd raspberry/module
+      $ vi config.py
+      ```      
+      ```python3
+      PORT = 아두이노_시리얼_포트
+      USER_ID = 자판기_소유자_아이디  # 모바일에서 회원가입한 유저 아이디를 의미한다. 초기 데이터 셋은 'rltn123'으로 하면 잘 동작할 것임
+      SERIAL_NUMBER = 자판기_고유_번호 # 자판기마다 부여되는 고유번호를 의미한다. [hango-server](https://github.com/golagola2020/hango-server)의 고객 관리 시스템에서 등록할 수 있다. 초기 데이터 셋은 '20200814042555141'으로 하면 잘 동작할 것임
+      ```
+   3. [API.py]() 서버 데이터 요청 및 응답 경로 설정 파일 수정
+      * 해당 API.py를 수정해도 되지만, 보안을 위해 OS에 직접 환경 변수를 등록하는 것을 권장합니다.
+         ```
+         vi API.py
+         ```
+         ```python3
+         URL = http://127.0.0.1:9700  # 행고 웹서버는 9700포트에서 가동되기 때문에 9700 포트와 포워딩을 시켜주는 것.
+         ```
+      * 환경 변수로 등록하는 방법
+         1. API.py 설정
+            ```python3
+            import os       # 시스템 모듈
+
+            # 데이터 요청 Domain 선언
+            URL = str(os.environ['HANGO_URL'])  # 초기 설정대로 두면 된다. 변경할 필요 없음.
+            ```
+         2. OS 환경 변수 설정
+            * .bashrc 파일 가장 하단에 HANGO_URL 등록
+            ```
+            $ vi ~/.bashrc
+            ```
+            ```
+            # 가장 하단에 아래 코드 추가할 것
+            export HANGO_URL="http://127.0.0.1:9700"
+            ```
+         3. 수정된 .bashrc 파일 적용
+            * 재부팅을 하는 방법도 있으나 아래 명령어로 간단하게 적용할 수 있음.
+            ```
+            source ~/.bashrc
+            ```
    3. 실행
       * hango-raspberry-pi 루트 경로의 raspberry 폴더 안에 있는 [main.py](https://github.com/golagola2020/hango-raspberry-pi/blob/master/raspberry/main.py) 실행
       * 주의 : 해당 경로까지 이동한 뒤에 실행시켜야 합니다.
-   ```
-   $ cd ../
-   $ python3 main.py
-   ```
+         ```
+         $ cd ../
+         $ python3 main.py
+         ```
    
 ## 배포(발행)
 
 * https://github.com/golagola2020/hango-raspberry-pi 에 push 권한이 있다면 :  
-```
-$ git checkout -b 'features to develop'
-$ git commit -m '[features to develop] message...'
-$ git push origin 'features to develop'
-```
+   ```
+   $ git checkout -b 'features to develop'
+   $ git commit -m '[features to develop] message...'
+   $ git push origin 'features to develop'
+   ```
 
 * https://github.com/golagola2020/hango-raspberry-pi 에 push 권한이 없다면 :  
    1. 포크 동기화 [Syncing a fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
    2. Pull Request 보내기 [Creating a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request)
    
-## 데모
-#### 클라이언트 데모
-> v1.0 : https://youtu.be/D2CXURqW8qs
-#### 모바일 데모
-> v1.0 : https://youtu.be/K7cLH89WKPQ
-
+## 가이드 데모
+[![Watch the video](https://user-images.githubusercontent.com/56839474/96984452-6d023300-155b-11eb-9686-f7b46d721b3f.png)](https://youtu.be/suJCUtuc3GM)
 
 ## 기여하기
 [CONTRIBUTING.md](https://github.com/golagola2020/hango-raspberry-pi/blob/master/CONTRIBUTING.md) 를 읽으신 후 기여를 해주십시오.     

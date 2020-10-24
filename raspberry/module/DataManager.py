@@ -1,4 +1,6 @@
 
+from config import *
+
 class DataManager:
   '''
       @ DataManager Class
@@ -25,18 +27,20 @@ class DataManager:
 
     # 서버의 성공 여부와 음료수 정보를 응답 받았는지 검사
     if response["success"] == True and "drinks" in response:
-        # 전역 변수 초기화
-        del self.drinks["position"][:]
-        del self.drinks["name"][:]
-        del self.drinks["price"][:]
-        del self.drinks["count"][:]
-
         # 데이터 삽입
-        for drink in response["drinks"]:
-            self.drinks["position"].append(drink["position"])
-            self.drinks["name"].append(drink["name"])
-            self.drinks["price"].append(drink["price"])
-            self.drinks["count"].append(drink["count"])
+        for i in range(len(response["drinks"])):
+            if self.drinks["name"][i] != response["drinks"]["name"][i]:
+              # 기존 음료의 음성 파일들 삭제
+              os.remove(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
+              os.remove(f'{RPI_FILE_PATH}/sounds/position/{self.drinks["name"][i]}.mp3')
+              os.remove(f'{RPI_FILE_PATH}/sounds/sold/{self.drinks["name"][i]}.mp3')
+              os.remove(f'{RPI_FILE_PATH}/sounds/sold_out/{self.drinks["name"][i]}.mp3')
+
+              # 변경된 데이터 변경
+              self.drinks["name"][i] = response["drinks"]["name"][i]
+              self.drinks["position"][i] = response["drinks"]["position"][i]
+              self.drinks["price"][i] = response["drinks"]["price"][i]
+              self.drinks["count"][i] = response["drinks"]["count"][i]
     else:
         # 서버 에러 메세지 출력
         print("음료를 세팅할 수 없습니다.\n서버 에러 메세지 : ", response["msg"])
