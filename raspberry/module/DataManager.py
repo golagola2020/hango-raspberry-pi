@@ -33,7 +33,7 @@ class DataManager:
         if response["drinks"]:
           for i in range(len(response["drinks"])):
               if self.drinks["name"]:
-                if self.drinks["name"][i] != response["drinks"][i]["name"] or self.drinks["price"][i] != response["drinks"][i]["price"]):
+                if self.drinks["name"][i] != response["drinks"][i]["name"] or self.drinks["price"][i] != response["drinks"][i]["price"]:
                   # 기존 음료의 음성 파일들 삭제
                   os.remove(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
                   os.remove(f'{RPI_FILE_PATH}/sounds/position/{self.drinks["name"][i]}.mp3')
