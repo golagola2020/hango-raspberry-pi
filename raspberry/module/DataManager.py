@@ -32,7 +32,7 @@ class DataManager:
         # 데이터 삽입
         if response["drinks"]:
           for i in range(len(response["drinks"])):
-              if self.drinks["name"] and self.drinks["name"][i] != response["drinks"][i]["name"]:
+              if self.drinks["name"] and (self.drinks["name"][i] != response["drinks"][i]["name"] or self.drinks["price"][i] != response["drinks"][i]["price"]):
                 # 기존 음료의 음성 파일들 삭제
                 os.remove(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
                 os.remove(f'{RPI_FILE_PATH}/sounds/position/{self.drinks["name"][i]}.mp3')
@@ -46,6 +46,7 @@ class DataManager:
                 self.drinks["price"][i] = response["drinks"][i]["price"]
                 self.drinks["count"][i] = response["drinks"][i]["count"]
               elif not self.drinks["name"]:
+                # 서버로부터 음료 데이터를 처음 수신하여 리스트에 저장
                 print("서버로부터 수신한 데이터를 저장합니다...")
                 for i in range(len(response["drinks"])):
                   self.drinks["name"].append(response["drinks"][i]["name"])
