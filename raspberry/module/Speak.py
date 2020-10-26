@@ -20,6 +20,8 @@ class Gspeak:
             'sold_out': {}
         }
 
+        self.origin_price = []
+
         mixer.init(speed)
 
     def get_sound_msgs(self):
@@ -61,6 +63,7 @@ class Gspeak:
         for idx in range(len(drinks["name"])):
             # 손이 음료를 향해 위치한 상태 메세지
             self.sound_msgs["position"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. {str(drinks['price'][idx])}원입니다아."
+            self.origin_price.append(drinks['price'][idx])
             # 음료수가 팔린 상태
             self.sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오."
             # 음료수 품절 상태
@@ -73,9 +76,9 @@ class Gspeak:
         # 서버로부터 전달된 음료수 이름들 순회
         for idx, drink_name in enumerate(drinks["name"]):
             # 사운드로 만들어지지 않은 음료수가 있다면 실행
-            if drink_name not in self.sound_msgs["position"]:
+            if drink_name not in self.sound_msgs["position"] or drinks["price"][idx] != self.origin_price[idx]:
                 # 자판기의 모든 음료 정보를 하나의 문자열로 병합
-                print(f'추가된 음료 : {drink_name}\n{drink_name} 음성 파일을 생성합니다...')
+                print(f'{drink_name} 음성 파일을 생성합니다...')
                 names = ""
                 for i, name in enumerate(drinks["name"]):
                     names += f"{str(i+1)}번 {name} "
@@ -85,6 +88,7 @@ class Gspeak:
                 self.save_sound('basic', 'basic', self.sound_msgs["basic"]["basic"])
                 # 손이 음료를 향해 위치한 상태 메세지
                 self.sound_msgs["position"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. {str(drinks['price'][idx])}원입니다아."
+                self.origin_price[idx] = drinks['price'][idx]     # 수정된 음료 가격 저장
                 self.save_sound('position', drinks["name"][idx], self.sound_msgs["position"][drinks["name"][idx]])
                 # 음료수가 팔린 상태
                 self.sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오."
@@ -92,6 +96,7 @@ class Gspeak:
                 # 음료수 품절 상태
                 self.sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. 품절입니다아."
                 self.save_sound('sold_out', drinks["name"][idx], self.sound_msgs["sold_out"][drinks["name"][idx]])
+        
 
     def say(self, folder_name, sound_name='basic'):
         '''
