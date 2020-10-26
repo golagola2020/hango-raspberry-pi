@@ -78,7 +78,7 @@ class Gspeak:
             # 사운드로 만들어지지 않은 음료수가 있다면 실행
             if drink_name not in self.sound_msgs["position"] or drinks["price"][idx] != self.origin_price[idx]:
                 # 자판기의 모든 음료 정보를 하나의 문자열로 병합
-                print(f'추가된 음료 : {drink_name}\n{drink_name} 음성 파일을 생성합니다...')
+                print(f'변경된 음료 : {drink_name}\n{drink_name} 음성 파일을 생성합니다...')
                 names = ""
                 for i, name in enumerate(drinks["name"]):
                     names += f"{str(i+1)}번 {name} "
