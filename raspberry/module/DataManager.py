@@ -41,7 +41,7 @@ class DataManager:
                   os.remove(f'{RPI_FILE_PATH}/sounds/sold_out/{self.drinks["name"][i]}.mp3')
 
                   # 변경되었다고 로그로 출력
-                  print(f'음료 데이터가 변경되었습니다.\n변경된 음료 : {drinks["name"][i]} -> {response["drinks"][i]["name"]}')
+                  print(f'음료 데이터가 변경되었습니다.\n변경된 음료 : {self.drinks["name"][i]} -> {response["drinks"][i]["name"]}')
 
                 # 음료수가 변경되든 안되든 새로운 데이터로 refresh 
                 self.drinks["name"][i] = response["drinks"][i]["name"]
