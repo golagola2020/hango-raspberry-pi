@@ -35,10 +35,14 @@ class DataManager:
               if self.drinks["name"]:
                 if self.drinks["name"][i] != response["drinks"][i]["name"] or self.drinks["price"][i] != response["drinks"][i]["price"]:
                   # 기존 음료의 음성 파일들 삭제
-                  os.remove(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
-                  os.remove(f'{RPI_FILE_PATH}/sounds/position/{self.drinks["name"][i]}.mp3')
-                  os.remove(f'{RPI_FILE_PATH}/sounds/sold/{self.drinks["name"][i]}.mp3')
-                  os.remove(f'{RPI_FILE_PATH}/sounds/sold_out/{self.drinks["name"][i]}.mp3')
+                  try:
+                    print('음료가 변경되어 기존 음성 파일을 삭제합니다...')
+                    os.remove(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
+                    os.remove(f'{RPI_FILE_PATH}/sounds/position/{self.drinks["name"][i]}.mp3')
+                    os.remove(f'{RPI_FILE_PATH}/sounds/sold/{self.drinks["name"][i]}.mp3')
+                    os.remove(f'{RPI_FILE_PATH}/sounds/sold_out/{self.drinks["name"][i]}.mp3')
+                  except:
+                    print('기존 음성 파일이 이미 삭제되어 음성 파일 삭제는 무시하여 진행합니다...')
 
                   # 변경되었다고 로그로 출력
                   print(f'음료 데이터가 변경되었습니다.\n변경된 음료 : {self.drinks["name"][i]} -> {response["drinks"][i]["name"]}')
