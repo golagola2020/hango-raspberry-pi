@@ -136,7 +136,6 @@ def main():
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
                             Serial.current_sensing_data = f"duplicate {sensings['duplicate']}"
 
-                            # speak.exit()
                             speak.stop()
                             print("물체가 감지되어 스피커 출력을 실행합니다.")
 
@@ -150,7 +149,6 @@ def main():
                             # 새로 감지된 정보 저장 => 같은 말을 반복하지 않기 위함
                             Serial.current_sensing_data = f"sensed_position {sensings['sensed_position']}"
 
-                            # speak.exit()
                             speak.stop()
                             print("물체가 감지되어 스피커 출력을 실행합니다.")
 

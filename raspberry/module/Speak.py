@@ -64,7 +64,7 @@ class Gspeak:
             # 음료수가 팔린 상태
             self.sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오."
             # 음료수 품절 상태
-            self.sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}, 품절입니다아."
+            self.sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. 품절입니다아."
 
     def update_message(self, drinks):
         '''
@@ -90,7 +90,7 @@ class Gspeak:
                 self.sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오."
                 self.save_sound('sold', drinks["name"][idx], self.sound_msgs["sold"][drinks["name"][idx]])
                 # 음료수 품절 상태
-                self.sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}, 품절입니다아."
+                self.sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. 품절입니다아."
                 self.save_sound('sold_out', drinks["name"][idx], self.sound_msgs["sold_out"][drinks["name"][idx]])
 
     def say(self, folder_name, sound_name='basic'):
@@ -106,8 +106,8 @@ class Gspeak:
                 5. sold_out : 음료수 품절 상태
         '''
 
-        # 폴더명과 사운드명 출력
-        print(f'Folder Name : {folder_name}, Sound Name : {sound_name}')
+        # 폴더명과 사운드명 출
+        print(f'음성 출력 중....\nFolder Name : {folder_name}, Sound Name : {sound_name}')
 
         mixer.music.load(f'{RPI_FILE_PATH}/sounds/{folder_name}/{sound_name}.mp3')
         mixer.music.play()
@@ -116,7 +116,6 @@ class Gspeak:
         if folder_name != 'basic':
             clock = time.Clock()
             while mixer.music.get_busy():
-                print("음성 출력 중...")
                 clock.tick(1000)    # 재생 시간 연장
                   
     def stop(self):

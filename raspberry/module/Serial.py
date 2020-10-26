@@ -23,9 +23,12 @@ class Serial:
     receive = port.readline()
 
     # 바이트형을 기본 문자열형으로 디코딩
-    receive = list(map(lambda rcv: rcv.decode(), receive.split()))
+    try:
+      receive = list(map(lambda rcv: rcv.decode(), receive.split()))
+      return receive
+    except UnicodeDecodeError:
+      print(f"아두이노의 센싱 데이터 {receive}를 'utf-8'로 디코딩하는 과정에서 문제가 발생하였습니다.\n해당 데이터는 변환할 수 없는 데이터이므로 무시됩니다.")
 
-    return receive
   
   @staticmethod
   def get_received_keys():

@@ -1,4 +1,5 @@
 
+
 from config import *
 
 class DataManager:
@@ -26,21 +27,32 @@ class DataManager:
     '''
 
     # 서버의 성공 여부와 음료수 정보를 응답 받았는지 검사
+    print(f'서버 응답 데이터 : {response}') 
     if response["success"] == True and "drinks" in response:
         # 데이터 삽입
-        for i in range(len(response["drinks"])):
-            if self.drinks["name"][i] != response["drinks"]["name"][i]:
-              # 기존 음료의 음성 파일들 삭제
-              os.remove(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
-              os.remove(f'{RPI_FILE_PATH}/sounds/position/{self.drinks["name"][i]}.mp3')
-              os.remove(f'{RPI_FILE_PATH}/sounds/sold/{self.drinks["name"][i]}.mp3')
-              os.remove(f'{RPI_FILE_PATH}/sounds/sold_out/{self.drinks["name"][i]}.mp3')
+        if response["drinks"]:
+          for i in range(len(response["drinks"])):
+              if self.drinks["name"] and self.drinks["name"][i] != response["drinks"][i]["name"]:
+                # 기존 음료의 음성 파일들 삭제
+                os.remove(f'{RPI_FILE_PATH}/sounds/basic/basic.mp3')
+                os.remove(f'{RPI_FILE_PATH}/sounds/position/{self.drinks["name"][i]}.mp3')
+                os.remove(f'{RPI_FILE_PATH}/sounds/sold/{self.drinks["name"][i]}.mp3')
+                os.remove(f'{RPI_FILE_PATH}/sounds/sold_out/{self.drinks["name"][i]}.mp3')
 
-              # 변경된 데이터 변경
-              self.drinks["name"][i] = response["drinks"]["name"][i]
-              self.drinks["position"][i] = response["drinks"]["position"][i]
-              self.drinks["price"][i] = response["drinks"]["price"][i]
-              self.drinks["count"][i] = response["drinks"]["count"][i]
+                # 변경된 데이터 변경
+                print(f'음료 데이터가 변경되었습니다.\n음료수 변경됨 : {drinks["name"][i]} -> {response["drinks"]["name"][i]}')
+                self.drinks["name"][i] = response["drinks"][i]["name"]
+                self.drinks["position"][i] = response["drinks"][i]["position"]
+                self.drinks["price"][i] = response["drinks"][i]["price"]
+                self.drinks["count"][i] = response["drinks"][i]["count"]
+              elif not self.drinks["name"]:
+                print("서버로부터 수신한 데이터를 저장합니다...")
+                for i in range(len(response["drinks"])):
+                  self.drinks["name"].append(response["drinks"][i]["name"])
+                  self.drinks["position"].append(response["drinks"][i]["position"])
+                  self.drinks["price"].append(response["drinks"][i]["price"])
+                  self.drinks["count"].append(response["drinks"][i]["count"])
+                return
     else:
         # 서버 에러 메세지 출력
         print("음료를 세팅할 수 없습니다.\n서버 에러 메세지 : ", response["msg"])
