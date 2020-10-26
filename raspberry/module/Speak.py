@@ -20,6 +20,8 @@ class Gspeak:
             'sold_out': {}
         }
 
+        self.origin_price = []
+
         mixer.init(speed)
 
     def get_sound_msgs(self):
@@ -61,6 +63,7 @@ class Gspeak:
         for idx in range(len(drinks["name"])):
             # 손이 음료를 향해 위치한 상태 메세지
             self.sound_msgs["position"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. {str(drinks['price'][idx])}원입니다아."
+            self.origin_price.append(drinks['price'][idx])
             # 음료수가 팔린 상태
             self.sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오."
             # 음료수 품절 상태
@@ -85,6 +88,7 @@ class Gspeak:
                 self.save_sound('basic', 'basic', self.sound_msgs["basic"]["basic"])
                 # 손이 음료를 향해 위치한 상태 메세지
                 self.sound_msgs["position"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. {str(drinks['price'][idx])}원입니다아."
+                self.origin_price[i] = drinks['price'][idx]
                 self.save_sound('position', drinks["name"][idx], self.sound_msgs["position"][drinks["name"][idx]])
                 # 음료수가 팔린 상태
                 self.sound_msgs["sold"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]} 선택. 맛있게 드시고 즐거운 하루 되십시오."
@@ -92,6 +96,12 @@ class Gspeak:
                 # 음료수 품절 상태
                 self.sound_msgs["sold_out"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. 품절입니다아."
                 self.save_sound('sold_out', drinks["name"][idx], self.sound_msgs["sold_out"][drinks["name"][idx]])
+
+            elif drinks["price"][idx] != self.origin_price[idx]:
+                # 손이 음료를 향해 위치한 상태 메세지
+                self.sound_msgs["position"][drinks["name"][idx]] = f"{drinks['position'][idx]}번. {drinks['name'][idx]}. {str(drinks['price'][idx])}원입니다아."
+                self.save_sound('position', drinks["name"][idx], self.sound_msgs["position"][drinks["name"][idx]])
+        
 
     def say(self, folder_name, sound_name='basic'):
         '''
